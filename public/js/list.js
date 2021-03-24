@@ -1,5 +1,26 @@
-function app(state, output) {
-  append(view(state), output)
+function app(state, output, dispatch) {
+  R.compose(
+    append(view(state)),
+    clear()
+  )(output)
+
+  const stop = dispatch(e => {
+    stop()
+    e.preventDefault()
+    const newText = getText()
+    if (newText !== '') {
+      const newState = [
+        ...state,
+        newText
+      ]
+      setText('')
+      app(newState, output, dispatch)
+    } else {
+      return false
+    }
+
+
+  })
 }
 
 function view(state) {
@@ -22,8 +43,11 @@ function message(content, index) {
   )(elem('div'))
 }
 
+const buttonClick = on('click', getElem('message-button'))
+
 app(
-  Object.freeze(['this is the first message', 'second Message']),
-  getElem('message-list')
+  Object.freeze([]),
+  getElem('message-list'),
+  buttonClick
 )
 
